@@ -1,0 +1,27 @@
+{
+  "name": "backbone.nativeview",
+  "version": "0.1.0",
+  "author": "Adam Krebs <amk528@cs.nyu.edu>",
+  "description": "A Backbone View powered by native DOM methods",
+  "licence": "MIT",
+  "main": "backbone.nativeview",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akre54/backbone.nativeview"
+  },
+  "dependencies": {
+    "underscore": "*"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "backbone": "git://github.com/akre54/backbone#view-native-hooks"
+  },
+  "engines": {
+    "node": "*",
+    "npm": "*"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha"
+  }
+}
