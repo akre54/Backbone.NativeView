@@ -1,7 +1,7 @@
 // Backbone.NativeView.js 0.1.0
 // ---------------
 
-//     (c) 2014 Adam Krebs
+//     (c) 2014 Adam Krebs, Jimmy Yuen Ho Wong
 //     Backbone.NativeView may be freely distributed under the MIT license.
 //     For all details and documentation:
 //     https://github.com/akre54/Backbone.NativeView
@@ -93,6 +93,7 @@
     },
 
     remove: function() {
+      this.stopListening();
       this.undelegateEvents();
       if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
       return this;
