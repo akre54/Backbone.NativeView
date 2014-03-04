@@ -18,27 +18,13 @@
   // Caches a local reference to `Element.prototype` for faster access.
   var ElementProto = typeof Element != 'undefined' && Element.prototype;
 
-  // Given an object `obj` and an operation `op`, which must be either `add` or
-  // `remove`, this function returns either the native implementation of the
-  // [add|remove]EventListener method directly or a function that delegates to
-  // IE's [attach|detach]Event methods.
-  function makeEventListener(obj, op) {
-    if (obj[op + 'EventListener']) return obj[op + 'EventListener'];
-    var func = op == 'add' ? obj.attachEvent : obj.detachEvent;
-    return function (eventName, listener) {
-      func.call(this, 'on' + eventName, listener);
-    };
+  // Cross-browser event listener shims
+  var elementAddEventListener = ElementProto.addEventListener || function(eventName, listener) {
+    return this.attachEvent(eventName, listener);
   }
-
-  // Caches the window's event listener methods for IE and Safari.
-  var windowAddEventListener = typeof window != 'undefined' &&
-      makeEventListener(window, 'add');
-  var windowRemoveEventListener = typeof window != 'undefined' &&
-      makeEventListener(window, 'remove');
-
-  // Caches the Element prototype's event listener methods for everything else.
-  var elementAddEventListener = makeEventListener(ElementProto, 'add');
-  var elementRemoveEventListener = makeEventListener(ElementProto, 'remove');
+  var elementRemoveEventListener = ElementProto.removeEventListener || function(eventName, listener) {
+    return this.detachEvent('on' + eventName, listener);
+  }
 
   // Find the right `Element#matches` for IE>=9 and modern browsers.
   var matchesSelector = ElementProto && ElementProto.matches ||
@@ -68,39 +54,14 @@
     },
 
     $: function(selector) {
-      return this.find(selector);
-    },
-
-    $$: function(selector) {
-      return this.findAll(selector);
-    },
-
-    find: function(selector) {
-      return this.el.querySelector(selector);
-    }
-
-    findAll: function(selector) {
       return this.el.querySelectorAll(selector);
     },
 
-    make: function(tagName, attributes, content) {
-      var el = document.createElement(tagName);
-      for (var attr in attrs) {
-        el.setAttribute(attr, attrs[attr]);
-      }
-      if (content != null) el.innerHTML = content;
-      return el;
-    },
-
-    remove: function() {
-      this.stopListening();
-      this.undelegateEvents();
+    _removeElement: function() {
       if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
-      return this;
     },
 
-    setElement: function(element, delegate) {
-      if (this.el) this.undelegateEvents();
+    _setEl: function(element, attrs) {
       if (typeof element == 'string') {
         if (paddedLt.test(element)) {
           var el = document.createElement('div');
@@ -112,26 +73,35 @@
       } else {
         this.el = element;
       }
-      return this;
+
+      // Set attributes on the element
+      for (var attr in attrs) {
+        attr in this.el ? this.el[attr] = attrs[attr] : this.el.setAttribute(attr, attrs[attr]);
+      }
     },
 
     // Make a event delegation handler for the given `eventName` and `selector`
     // and attach it to `this.el`.
-    // If selector is empty, the method will be bound to `this.el`. If not, a
+    // If selector is empty, the listener will be bound to `this.el`. If not, a
     // new handler that will recursively traverse up the event target's DOM
     // hierarchy looking for a node that matches the selector. If one is found,
     // the event's `delegateTarget` property is set to it and the return the
-    // result of calling bound `method` with the parameters given to the
+    // result of calling bound `listener` with the parameters given to the
     // handler.
-    delegate: function(eventName, selector, method) {
+    delegate: function(eventName, selector, listener) {
+      if (_.isFunction(selector)) {
+        listener = selector;
+        selector = null;
+      }
+
       var root = this.el, handler;
-      if (!selector) handler = method;
+      if (!selector) handler = listener;
       else handler = function (e) {
         var node = e.target || e.srcElement;
         for (; node && node != root; node = node.parentNode) {
           if (matchesSelector.call(node, selector)) {
             e.delegateTarget = node;
-            return method.apply(this, arguments);
+            return listener.apply(this, arguments);
           }
         }
       };
