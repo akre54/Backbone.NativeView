@@ -29,7 +29,7 @@
     var result = view.$('a b');
 
     strictEqual(result[0].innerHTML, 'test');
-    ok(result instanceof NodeList || result instanceof Array || result instanceof Backbone.$);
+    ok(result.length === +result.length);
   });
 
   test("_setEl", 2, function() {
@@ -287,7 +287,7 @@
     document.body.appendChild(button1);
     document.body.appendChild(button2);
 
-    Test = View.extend({
+    var Test = View.extend({
       events: {
         click: function(e) {
           ok(view.el === e.target || e.srcElement);
@@ -379,9 +379,10 @@
   });
 
   // Cross-browser helpers
-  var addEventListener = Element.prototype.addEventListener || function(eventName, listener) {
-    return this.attachEvent('on' + eventName, listener);
-  };
+  var addEventListener =
+    typeof Element != 'undefined' && Element.prototype.addEventListener || function(eventName, listener) {
+      return this.attachEvent('on' + eventName, listener);
+    };
 
   function click(element) {
     var event;
