@@ -44,7 +44,10 @@
         return false;
       };
 
-  Backbone.NativeView = Backbone.View.extend({
+
+  // To extend an existing view to use native methods, extend the View prototype
+  // with the mixin: _.extend(MyView.prototype, Backbone.NativeViewMixin);
+  Backbone.NativeViewMixin = {
 
     _domEvents: null,
 
@@ -122,7 +125,9 @@
       }
       return this;
     }
-  });
+  };
+
+  Backbone.NativeView = Backbone.View.extend(Backbone.NativeViewMixin);
 
   return Backbone.NativeView;
 }));
