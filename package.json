@@ -12,10 +12,12 @@
   "dependencies": {
     "underscore": "*"
   },
+  "peerDependencies": {
+    "backbone": "git://github.com/akre54/backbone#view-native-hooks"
+  },
   "devDependencies": {
     "mocha": "*",
     "chai": "*",
-    "backbone": "git://github.com/akre54/backbone#view-native-hooks"
   },
   "engines": {
     "node": "*",

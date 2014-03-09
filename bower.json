@@ -14,8 +14,10 @@
     "change"
   ],
   "dependencies": {
-    "underscore": "*",
-    "backbone": "*"
+    "underscore": "*"
+  },
+  "peerDependencies": {
+    "backbone": "git://github.com/akre54/backbone#view-native-hooks"
   },
   "license": "MIT"
 }
