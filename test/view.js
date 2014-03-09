@@ -379,10 +379,9 @@
   });
 
   // Cross-browser helpers
-  var addEventListener =
-    typeof Element != 'undefined' && Element.prototype.addEventListener || function(eventName, listener) {
-      return this.attachEvent('on' + eventName, listener);
-    };
+  var addEventListener = typeof Element != 'undefined' && Element.prototype.addEventListener || function(eventName, listener) {
+    return this.attachEvent('on' + eventName, listener);
+  };
 
   function click(element) {
     var event;

@@ -15,6 +15,9 @@
   // with whitespace.
   var paddedLt = /^\s*</;
 
+  // Cached regex for event namespaces.
+  var rtypenamespace = /^([^.]*)(?:\.(.+)|)$/;
+
   // Caches a local reference to `Element.prototype` for faster access.
   var ElementProto = typeof Element != 'undefined' && Element.prototype;
 
@@ -109,18 +112,35 @@
         }
       };
 
+      var namespaces = eventName.split('.');
+      eventName = namespaces.shift();
+
       elementAddEventListener.call(root, eventName, handler, false);
-      this._domEvents.push({eventName: eventName, handler: handler});
+      this._domEvents.push({eventName: eventName, handler: handler, namespaces: namespaces});
       return this;
     },
 
+    // Remove events matching the
+    undelegate: function(selector) {
+      var tmp = rtypenamespace.exec(selector), eventName = tmp[1], namespace = tmp[2];
+      if (this.el) {
+        var remove = _.filter(this._domEvents, function(item) {
+          return item.eventName === eventName || _.contains(item.namespaces, namespace);
+        });
+        _.each(remove, function(item) {
+          elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
+        }, this);
+        this._domEvents = _.difference(this._domEvents, remove);
+      }
+      return this;
+    },
+
+    // Remove all events created with `delegate` from `el`
     undelegateEvents: function() {
-      var el = this.el, domEvents = this._domEvents, i, l, item;
-      if (el) {
-        for (i = 0, l = domEvents.length; i < l; i++) {
-          item = domEvents[i];
-          elementRemoveEventListener.call(el, item.eventName, item.handler, false);
-        }
+      if (this.el) {
+        _.each(this._domEvents, function(item) {
+          elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
+        }, this);
         this._domEvents = [];
       }
       return this;
