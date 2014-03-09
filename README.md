@@ -33,6 +33,24 @@ _.extend(MyView.prototype, Backbone.NativeViewMixin);
 ```
 
 
+Features:
+---------
+Delegation:
+```js
+var View = new NativeView(el: '#my-element');
+view.delegate('click', view.clickHandler);
+```
+
+Undelegation with event names or namespaces
+```js
+var View = new NativeView(el: '#my-element');
+view.delegate('click', view.clickHandler);
+view.delegate('click.mynamespace', view.clickHandler);
+view.undelegate('.mynamespace');
+view.undelegate('click');
+```
+
+
 Notes:
 ------
 * The `$el` property no longer exists on Views. Use `el` instead.

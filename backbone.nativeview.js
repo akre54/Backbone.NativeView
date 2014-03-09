@@ -1,4 +1,4 @@
-// Backbone.NativeView.js 0.1.0
+// Backbone.NativeView.js 0.1.5
 // ---------------
 
 //     (c) 2014 Adam Krebs, Jimmy Yuen Ho Wong
@@ -125,7 +125,7 @@
       var tmp = rtypenamespace.exec(selector), eventName = tmp[1], namespace = tmp[2];
       if (this.el) {
         var remove = _.filter(this._domEvents, function(item) {
-          return item.eventName === eventName || _.contains(item.namespaces, namespace);
+          return (item.eventName === eventName && !namespace) || _.contains(item.namespaces, namespace);
         });
         _.each(remove, function(item) {
           elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
