@@ -32,11 +32,14 @@
     ok(result.length === +result.length);
   });
 
-  test("_setEl", 2, function() {
-    view._setEl('<div>', {id: 'test-div'});
 
-    equal(view.el.tagName.toLowerCase(), 'div');
-    equal(view.el.id, 'test-div');
+  test("$el", 3, function() {
+    var view = new View;
+    view.setElement('<p><a><b>test</b></a></p>');
+    strictEqual(view.el.nodeType, 1);
+
+    ok(Backbone.$ ? view.$el instanceof Backbone.$ : true);
+    strictEqual(Backbone.$ ? view.$el[0] : view.el, view.el);
   });
 
   test("initialize", 1, function() {
@@ -73,20 +76,18 @@
     equal(counter2, 3);
   });
 
+
   test("delegate", 2, function() {
-    var counter1 = 0, counter2 = 0;
-
-    view = new View({el: '#testElement'});
-    view.increment = function(){ counter1++; };
-    view.delegate('click', function(){ counter2++; });
-
-    view.delegate('click', 'h1', view.increment);
-    view.delegate('click', view.increment);
-
+    var view = new View({el: '#testElement'});
+    view.delegate('click', 'h1', function() {
+      ok(true);
+    });
+    view.delegate('click', function() {
+      ok(true);
+    });
     click(view.$('h1')[0]);
-    equal(counter1, 2);
-    equal(counter2, 1);
   });
+
 
   test("delegateEvents allows functions for callbacks", 3, function() {
     view = new View({el: '<p></p>'});
@@ -151,9 +152,9 @@
     equal(counter2, 3);
   });
 
+
   test("undelegate", 0, function() {
     view = new View({el: '#testElement'});
-
     view.delegate('click', function() { ok(false); });
     view.delegate('click', 'h1', function() { ok(false); });
 
@@ -161,12 +162,12 @@
 
     click(view.$('h1')[0]);
     click(view.el);
-  })
+  });
 
   test("undelegate with passed handler", 1, function() {
     view = new View({el: '#testElement'});
-
-    var listener = view.delegate('click', function() { ok(false); });
+    var listener = function() { ok(false); };
+    view.delegate('click', listener);
     view.delegate('click', function() { ok(true); });
     view.undelegate('click', listener);
     click(view.el);
@@ -174,19 +175,23 @@
 
   test("undelegate with selector", 2, function() {
     view = new View({el: '#testElement'});
-
-    var counter1 = 0, counter2 = 0;
-    view.delegate('click', function() { debugger; counter1++; });
-    view.delegate('click', 'h1', function() { debugger; counter2++; });
-
+    view.delegate('click', function() { ok(true); });
+    view.delegate('click', 'h1', function() { ok(false); });
     view.undelegate('click', 'h1');
-
     click(view.$('h1')[0]);
     click(view.el);
-
-    equal(counter1, 1);
-    equal(counter2, 0);
   });
+
+  test("undelegate with handler and selector", 2, function() {
+    view = new View({el: '#testElement'});
+    view.delegate('click', function() { ok(true); });
+    var handler = function(){ ok(false); };
+    view.delegate('click', 'h1', handler);
+    view.undelegate('click', 'h1', handler);
+    click(view.$('h1')[0]);
+    click(view.el);
+  });
+
 
   test("_ensureElement with DOM node el", 1, function() {
     var Test = View.extend({
@@ -282,30 +287,27 @@
     document.body.removeChild(el);
   });
 
-  if (typeof Backbone.$ != 'undefined') {
-    test("custom events, with namespaces", 2, function() {
-      var count = 0;
+  // test("custom events", 2, function() {
+  //   var count = 0;
 
-      var Test = View.extend({
-        el: $('body'),
-        events: function() {
-          return {"fake$event.namespaced": "run"};
-        },
-        run: function() {
-          count++;
-        }
-      });
+  //   var Test = View.extend({
+  //     el: 'body',
+  //     events: function() {
+  //       return {"fake$event": "run"};
+  //     },
+  //     run: function() {
+  //       count++;
+  //     }
+  //   });
 
-      var view = new Test;
-      $('body').trigger('fake$event').trigger('fake$event');
-      equal(count, 2);
+  //   var view = new test;
+  //   $('body').trigger('fake$event').trigger('fake$event');
+  //   equal(count, 2);
 
-      $('body').off('.namespaced');
-      $('body').trigger('fake$event');
-      equal(count, 2);
-
-    });
-  }
+  //   $('body').off('fake$event');
+  //   $('body').trigger('fake$event');
+  //   equal(count, 2);
+  // });
 
   test("#1048 - setElement uses provided object.", 2, function() {
     var el = document.body;

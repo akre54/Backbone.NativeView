@@ -110,13 +110,18 @@
       };
 
       elementAddEventListener.call(root, eventName, handler, false);
-      this._domEvents.push({eventName: eventName, handler: handler, selector: selector});
+      this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});
       return handler;
     },
 
     // Remove a single delegated event. Either `eventName` or `selector` must
     // be included, `selector` and `listener` are optional.
     undelegate: function(eventName, selector, listener) {
+      if (_.isFunction(selector)) {
+        listener = selector;
+        selector = null;
+      }
+
       if (this.el) {
         var remove = _.filter(this._domEvents, function(item) {
           if (item.eventName !== eventName) return false;
@@ -129,9 +134,11 @@
             return true;
           }
         });
+
         _.each(remove, function(item) {
           elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
         }, this);
+
         this._domEvents = _.difference(this._domEvents, remove);
       }
       return this;
