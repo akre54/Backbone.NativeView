@@ -151,6 +151,43 @@
     equal(counter2, 3);
   });
 
+  test("undelegate", 0, function() {
+    view = new View({el: '#testElement'});
+
+    view.delegate('click', function() { ok(false); });
+    view.delegate('click', 'h1', function() { ok(false); });
+
+    view.undelegate('click');
+
+    click(view.$('h1')[0]);
+    click(view.el);
+  })
+
+  test("undelegate with passed handler", 1, function() {
+    view = new View({el: '#testElement'});
+
+    var listener = view.delegate('click', function() { ok(false); });
+    view.delegate('click', function() { ok(true); });
+    view.undelegate('click', listener);
+    click(view.el);
+  });
+
+  test("undelegate with selector", 2, function() {
+    view = new View({el: '#testElement'});
+
+    var counter1 = 0, counter2 = 0;
+    view.delegate('click', function() { debugger; counter1++; });
+    view.delegate('click', 'h1', function() { debugger; counter2++; });
+
+    view.undelegate('click', 'h1');
+
+    click(view.$('h1')[0]);
+    click(view.el);
+
+    equal(counter1, 1);
+    equal(counter2, 0);
+  });
+
   test("_ensureElement with DOM node el", 1, function() {
     var Test = View.extend({
       el: document.body

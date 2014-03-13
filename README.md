@@ -32,7 +32,6 @@ var MyView = Backbone.View.extend({
 _.extend(MyView.prototype, Backbone.NativeViewMixin);
 ```
 
-
 Features:
 ---------
 Delegation:
@@ -50,6 +49,10 @@ view.undelegate('.mynamespace');
 view.undelegate('click');
 ```
 
+Requirements:
+-------------
+NativeView makes use of `querySelector`/`querySelectorAll`. For IE7 and below
+you must include a polyfill for querySelector on `document` and `Element.prototype`.
 
 Notes:
 ------

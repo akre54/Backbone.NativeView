@@ -15,15 +15,12 @@
   // with whitespace.
   var paddedLt = /^\s*</;
 
-  // Cached regex for event namespaces.
-  var rtypenamespace = /^([^.]*)(?:\.(.+)|)$/;
-
   // Caches a local reference to `Element.prototype` for faster access.
   var ElementProto = typeof Element != 'undefined' && Element.prototype;
 
   // Cross-browser event listener shims
   var elementAddEventListener = ElementProto.addEventListener || function(eventName, listener) {
-    return this.attachEvent(eventName, listener);
+    return this.attachEvent('on' + eventName, listener);
   }
   var elementRemoveEventListener = ElementProto.removeEventListener || function(eventName, listener) {
     return this.detachEvent('on' + eventName, listener);
@@ -112,20 +109,25 @@
         }
       };
 
-      var namespaces = eventName.split('.');
-      eventName = namespaces.shift();
-
       elementAddEventListener.call(root, eventName, handler, false);
-      this._domEvents.push({eventName: eventName, handler: handler, namespaces: namespaces});
-      return this;
+      this._domEvents.push({eventName: eventName, handler: handler, selector: selector});
+      return handler;
     },
 
-    // Remove events matching the
-    undelegate: function(selector) {
-      var tmp = rtypenamespace.exec(selector), eventName = tmp[1], namespace = tmp[2];
+    // Remove a single delegated event. Either `eventName` or `selector` must
+    // be included, `selector` and `listener` are optional.
+    undelegate: function(eventName, selector, listener) {
       if (this.el) {
         var remove = _.filter(this._domEvents, function(item) {
-          return (item.eventName === eventName && !namespace) || _.contains(item.namespaces, namespace);
+          if (item.eventName !== eventName) return false;
+
+          if (listener) {
+            return item.listener === listener;
+          } else if (selector) {
+            return item.selector == selector;
+          } else {
+            return true;
+          }
         });
         _.each(remove, function(item) {
           elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);

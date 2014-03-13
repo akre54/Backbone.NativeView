@@ -14,31 +14,22 @@
   });
 
   test("undelegate", 9, function() {
-    var counter1 = 0, counter2 = 0, counter3 = 0;
+    var counter1 = 0, counter2 = 0;
     view.delegate('click', function() { counter1++; });
-    view.delegate('click.namespace', function() { counter2 ++; });
-    addEventListener.call(view.el, 'click', function() { counter3++ });
-
-    equal(view._domEvents.length, 2);
+    addEventListener.call(view.el, 'click', function() { counter2++ });
 
     click(view.el);
 
-    view.undelegate('.namespace');
-
-    click(view.el);
-
-    equal(counter1, 2);
-    equal(counter2, 1);
-    equal(counter3, 2);
+    equal(counter1, 1);
+    equal(counter3, 1);
     equal(view._domEvents.length, 1);
 
     view.undelegate('click');
 
     click(view.el);
 
-    equal(counter1, 2);
-    equal(counter2, 1);
-    equal(counter3, 3);
+    equal(counter1, 1);
+    equal(counter2, 2);
     equal(view._domEvents.length, 0);
   });
 
