@@ -16,43 +16,50 @@ var MyView = Backbone.NativeView.extend({
   initialize: function(options) {
     // ...
   }
-})
+});
 ```
 
 As an alternative, you may extend an existing View's prototype to use native
-methods:
+methods, or even Backbone.View itself:
 
 ```js
+_.extend(Backbone.View.prototype, Backbone.NativeViewMixin);
+
 var MyView = Backbone.View.extend({
   initialize: function(options) {
     // ...
   }
 });
-
-_.extend(MyView.prototype, Backbone.NativeViewMixin);
 ```
 
 Features:
 ---------
 Delegation:
 ```js
-var View = new NativeView(el: '#my-element');
+var view = new MyView({el: '#my-element'});
 view.delegate('click', view.clickHandler);
 ```
 
-Undelegation with event names or namespaces
+Undelegation with event names or listeners,
 ```js
-var View = new NativeView(el: '#my-element');
-view.delegate('click', view.clickHandler);
-view.delegate('click.mynamespace', view.clickHandler);
-view.undelegate('.mynamespace');
+view.undelegate('click', view.clickHandler);
 view.undelegate('click');
+```
+
+View-scoped element finding:
+```js
+view.$('.box')[0].classList.remove('active'); // for one matched element
+// for multiple matched elements
+_.each(view.$('.sidebar'), function(el) {
+  el.classList.add('active')
+});
+var fields = _.invoke(view.$('.field'), 'innerHTML');
 ```
 
 Requirements:
 -------------
 NativeView makes use of `querySelector`/`querySelectorAll`. For IE7 and below
-you must include a polyfill for querySelector on `document` and `Element.prototype`.
+you must include a polyfill.
 
 Notes:
 ------
