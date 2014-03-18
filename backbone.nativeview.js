@@ -122,24 +122,19 @@
         selector = null;
       }
 
+      var handlers = this._domEvents;
+
       if (this.el) {
-        var remove = _.filter(this._domEvents, function(item) {
-          if (item.eventName !== eventName) return false;
-
-          if (listener) {
-            return item.listener === listener;
-          } else if (selector) {
-            return item.selector == selector;
-          } else {
-            return true;
-          }
-        });
-
-        _.each(remove, function(item) {
-          elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
-        }, this);
-
-        this._domEvents = _.difference(this._domEvents, remove);
+        _(handlers).chain()
+          .filter(function(item) {
+            return item.eventName === eventName &&
+              (listener ? item.listener === listener : true) &&
+              (selector ? item.selector === selector : true);
+          })
+          .forEach(function(item) {
+            elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
+            handlers.splice(_.indexOf(handlers, item), 1);
+          }, this);
       }
       return this;
     },
