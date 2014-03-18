@@ -16,7 +16,7 @@
   var paddedLt = /^\s*</;
 
   // Caches a local reference to `Element.prototype` for faster access.
-  var ElementProto = typeof Element != 'undefined' && Element.prototype;
+  var ElementProto = (typeof Element !== 'undefined' && Element.prototype) || {};
 
   // Cross-browser event listener shims
   var elementAddEventListener = ElementProto.addEventListener || function(eventName, listener) {
