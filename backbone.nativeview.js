@@ -64,7 +64,7 @@
       if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
     },
 
-    _setEl: function(element, attrs) {
+    _setElement: function(element) {
       if (typeof element == 'string') {
         if (paddedLt.test(element)) {
           var el = document.createElement('div');
@@ -76,8 +76,9 @@
       } else {
         this.el = element;
       }
+    },
 
-      // Set attributes on the element
+    _setAttributes: function(attrs) {
       for (var attr in attrs) {
         attr in this.el ? this.el[attr] = attrs[attr] : this.el.setAttribute(attr, attrs[attr]);
       }

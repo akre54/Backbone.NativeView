@@ -36,9 +36,7 @@
 
   // Create local references to array methods we'll want to use later.
   var array = [];
-  var push = array.push;
   var slice = array.slice;
-  var splice = array.splice;
 
   // Current version of the library. Keep in sync with `package.json`.
   Backbone.VERSION = '1.1.2';
@@ -703,6 +701,7 @@
       var toAdd = [], toRemove = [], modelMap = {};
       var add = options.add, merge = options.merge, remove = options.remove;
       var order = !sortable && add && remove ? [] : false;
+      var targetProto = this.model.prototype;
 
       // Turn bare objects into model references, and prevent invalid models
       // from being added.
@@ -710,8 +709,10 @@
         attrs = models[i] || {};
         if (attrs instanceof Model) {
           id = model = attrs;
+        } else if (targetProto.generateId) {
+          id = targetProto.generateId(attrs);
         } else {
-          id = this.model.prototype.generateId(attrs);
+          id = attrs[targetProto.idAttribute || Model.prototype.idAttribute];
         }
 
         // If a duplicate is found, prevent it from being added and
@@ -938,7 +939,10 @@
     // Prepare a hash of attributes (or other model) to be added to this
     // collection.
     _prepareModel: function(attrs, options) {
-      if (attrs instanceof Model) return attrs;
+      if (attrs instanceof Model) {
+        if (!attrs.collection) attrs.collection = this;
+        return attrs;
+      }
       options = options ? _.clone(options) : {};
       options.collection = this;
       var model = new this.model(attrs, options);
@@ -951,7 +955,6 @@
     _addReference: function(model, options) {
       this._byId[model.cid] = model;
       if (model.id != null) this._byId[model.id] = model;
-      if (!model.collection) model.collection = this;
       model.on('all', this._onModelEvent, this);
     },
 
@@ -1030,7 +1033,6 @@
     _.extend(this, _.pick(options, viewOptions));
     this._ensureElement();
     this.initialize.apply(this, arguments);
-    this.delegateEvents();
   };
 
   // Cached regex to split keys for `delegate`.
@@ -1062,30 +1064,38 @@
       return this;
     },
 
-    // Remove this view by taking the element out of the document, remove all
-    // the DOM event listeners attached to it, and remove any applicable
-    // Backbone.Events listeners.
+    // Remove this view by taking the element out of the DOM, and removing any
+    // applicable Backbone.Events listeners.
     remove: function() {
-      this.undelegateEvents();
       this._removeElement();
       this.stopListening();
       return this;
     },
 
-    // Remove this view's element from the document and remove all the event
-    // listeners attached to it. Useful for subclasses to override in order to
-    // utilize an alternative DOM manipulation API.
+    // Remove this view's element from the document and all event listeners
+    // attached to it. Exposed for subclasses using an alternative DOM
+    // manipulation API.
     _removeElement: function() {
       this.$el.remove();
     },
 
-    // Change the view's element (`this.el` property), including event
-    // re-delegation.
-    setElement: function(element, delegate, attributes) {
+    // Change the view's element (`this.el` property) and re-delegate the
+    // view's events on the new element.
+    setElement: function(element) {
       this.undelegateEvents();
-      this._setEl(element, attributes);
-      if (delegate !== false) this.delegateEvents();
+      this._setElement(element);
+      this.delegateEvents();
       return this;
+    },
+
+    // Creates the `this.el` and `this.$el` references for this view using the
+    // given `el` and a hash of `attributes`. `el` can be a CSS selector or an
+    // HTML string, a jQuery context or an element. Subclasses can override
+    // this to utilize an alternative DOM manipulation API and are only required
+    // to set the `this.el` property.
+    _setElement: function(el) {
+      this.$el = el instanceof Backbone.$ ? el : Backbone.$(el);
+      this.el = this.$el[0];
     },
 
     // Set callbacks, where `this.events` is a hash of
@@ -1101,8 +1111,6 @@
     // pairs. Callbacks will be bound to the view, with `this` set properly.
     // Uses event delegation for efficiency.
     // Omitting the selector binds the event to `this.el`.
-    // This only works for delegate-able events: not `focus`, `blur`, and
-    // not `change`, `submit`, and `reset` in Internet Explorer.
     delegateEvents: function(events) {
       if (!(events || (events = _.result(this, 'events')))) return this;
       this.undelegateEvents();
@@ -1110,27 +1118,17 @@
         var method = events[key];
         if (!_.isFunction(method)) method = this[events[key]];
         if (!method) continue;
-
         var match = key.match(delegateEventSplitter);
-        var eventName = match[1], selector = match[2];
-        this.delegate(eventName, selector, _.bind(method, this));
+        this.delegate(match[1], match[2], _.bind(method, this));
       }
       return this;
     },
 
-    // Add a single event listener to the element responding only to the
-    // optional `selector` or catches all `eventName` events. Subclasses can
-    // override this to utilize an alternative DOM event management API.
+    // Add a single event listener to the view's element (or a child element
+    // using `selector`). This only works for delegate-able events: not `focus`,
+    // `blur`, and not `change`, `submit`, and `reset` in Internet Explorer.
     delegate: function(eventName, selector, listener) {
-      eventName += '.delegateEvents' + this.cid;
-      if (!selector) {
-        this.$el.on(eventName, listener);
-      } else {
-        // When `delegate` is called with two arguments, `selector` is actually
-        // the `listener`
-        this.$el.on(eventName, selector, listener);
-      }
-      return this;
+      this.$el.on(eventName + '.delegateEvents' + this.cid, selector, listener);
     },
 
     // Clears all callbacks previously bound to the view by `delegateEvents`.
@@ -1141,14 +1139,10 @@
       return this;
     },
 
-    // Creates the actual context for this view using the given `el` and a
-    // hash of `attributes` and returns the created element. `el` can be a CSS
-    // selector or an HTML string, a jQuery context or an element. Subclasses
-    // can override this to utilize an alternative DOM manipulation API.
-    _setEl: function(el, attributes) {
-      this.$el = el instanceof Backbone.$ ? el : Backbone.$(el);
-      this.$el.attr(attributes || {});
-      this.el = this.$el[0];
+    // A finer-grained `undelegateEvents` for removing a single delegated event.
+    // `selector` and `listener` are both optional.
+    undelegate: function(eventName, selector, listener) {
+      this.$el.off(eventName + '.delegateEvents' + this.cid, selector, listener);
     },
 
     // Ensure that the View has a DOM element to render into.
@@ -1160,10 +1154,17 @@
         var attrs = _.extend({}, _.result(this, 'attributes'));
         if (this.id) attrs.id = _.result(this, 'id');
         if (this.className) attrs['class'] = _.result(this, 'className');
-        this.setElement(document.createElement(_.result(this, 'tagName')), false, attrs);
+        this.setElement(document.createElement(_.result(this, 'tagName')));
+        this._setAttributes(attrs);
       } else {
-        this.setElement(_.result(this, 'el'), false);
+        this.setElement(_.result(this, 'el'));
       }
+    },
+
+    // Set attributes from a hash on this view's element.  Exposed for
+    // subclasses using an alternative DOM manipulation API.
+    _setAttributes: function(attributes) {
+      this.$el.attr(attributes);
     }
 
   });
@@ -1240,6 +1241,14 @@
         return new ActiveXObject("Microsoft.XMLHTTP");
       };
     }
+
+    // Pass along `textStatus` and `errorThrown` from jQuery.
+    var error = options.error;
+    options.error = function(xhr, textStatus, errorThrown) {
+      options.textStatus = textStatus;
+      options.errorThrown = errorThrown;
+      if (error) error.apply(this, arguments);
+    };
 
     // Make the request, allowing the user to override any Ajax options.
     var xhr = options.xhr = Backbone.ajax(_.extend(params, options));
@@ -1520,11 +1529,19 @@
         return detachEvent('on' + eventName, listener);
       };
 
+      // Remove window listeners.
       if (this._hasPushState) {
         removeEventListener('popstate', this.checkUrl, false);
       } else if (this._wantsHashChange && this._hasHashChange && !this.iframe) {
         removeEventListener('hashchange', this.checkUrl, false);
       }
+
+      // Clean up the iframe if necessary.
+      if (this.iframe) {
+        document.body.removeChild(this.iframe.frameElement);
+        this.iframe = null;
+      }
+
       // Some environments will throw when clearing an undefined interval.
       if (this._checkUrlInterval) clearInterval(this._checkUrlInterval);
       History.started = false;
