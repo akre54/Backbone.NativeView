@@ -44,6 +44,8 @@
         return false;
       };
 
+  // Cache Backbone.View for later access in constructor
+  var BBView = Backbone.View;
 
   // To extend an existing view to use native methods, extend the View prototype
   // with the mixin: _.extend(MyView.prototype, Backbone.NativeViewMixin);
@@ -53,7 +55,7 @@
 
     constructor: function() {
       this._domEvents = [];
-      return Backbone.View.apply(this, arguments);
+      return BBView.apply(this, arguments);
     },
 
     $: function(selector) {
