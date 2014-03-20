@@ -63,6 +63,7 @@
     },
 
     _removeElement: function() {
+      this.undelegateEvents();
       if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
     },
 
