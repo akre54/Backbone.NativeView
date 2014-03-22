@@ -135,9 +135,9 @@
               (listener ? item.listener === listener : true) &&
               (selector ? item.selector === selector : true);
           })
-          .forEach(function(item) {
+          .forEach(function(item, index) {
             elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
-            handlers.splice(_.indexOf(handlers, item), 1);
+            handlers.splice(index, 1);
           }, this);
       }
       return this;
