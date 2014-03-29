@@ -96,24 +96,22 @@
     // result of calling bound `listener` with the parameters given to the
     // handler.
     delegate: function(eventName, selector, listener) {
-      if (_.isFunction(selector)) {
+      if (typeof selector === 'function') {
         listener = selector;
         selector = null;
       }
 
-      var root = this.el, handler;
-      if (!selector) handler = listener;
-      else handler = function (e) {
+      var handler = selector ? function (e) {
         var node = e.target || e.srcElement;
-        for (; node && node != root; node = node.parentNode) {
+        for (; node && node != this.el; node = node.parentNode) {
           if (matchesSelector.call(node, selector)) {
             e.delegateTarget = node;
             return listener.apply(this, arguments);
           }
         }
-      };
+      } : listener;
 
-      elementAddEventListener.call(root, eventName, handler, false);
+      elementAddEventListener.call(this.el, eventName, handler, false);
       this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});
       return handler;
     },
@@ -121,24 +119,25 @@
     // Remove a single delegated event. Either `eventName` or `selector` must
     // be included, `selector` and `listener` are optional.
     undelegate: function(eventName, selector, listener) {
-      if (_.isFunction(selector)) {
+      if (typeof selector === 'function') {
         listener = selector;
         selector = null;
       }
 
-      var handlers = this._domEvents;
-
       if (this.el) {
-        _(handlers).chain()
-          .filter(function(item) {
-            return item.eventName === eventName &&
+        var handlers = this._domEvents.slice();
+        for (var i = 0, len = handlers.length; i < len; i++) {
+          var item = handlers[i];
+
+          var match = item.eventName === eventName &&
               (listener ? item.listener === listener : true) &&
               (selector ? item.selector === selector : true);
-          })
-          .forEach(function(item) {
-            elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
-            handlers.splice(_.indexOf(handlers, item), 1);
-          }, this);
+
+          if (!match) continue;
+
+          elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
+          this._domEvents.splice(_.indexOf(handlers, item), 1);
+        }
       }
       return this;
     },
@@ -146,9 +145,10 @@
     // Remove all events created with `delegate` from `el`
     undelegateEvents: function() {
       if (this.el) {
-        _.each(this._domEvents, function(item) {
+        for (var i = 0, len = this._domEvents.length; i < len; i++) {
+          var item = this._domEvents[i];
           elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
-        }, this);
+        };
         this._domEvents = [];
       }
       return this;
