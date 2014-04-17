@@ -23,7 +23,7 @@ As an alternative, you may extend an existing View's prototype to use native
 methods, or even Backbone.View itself:
 
 ```js
-_.extend(Backbone.View.prototype, Backbone.NativeViewMixin);
+var Backbone.View = Backbone.View.extend(Backbone.NativeViewMixin);
 
 var MyView = Backbone.View.extend({
   initialize: function(options) {
@@ -48,10 +48,12 @@ view.undelegate('click');
 
 View-scoped element finding:
 ```js
-view.$('.box')[0].classList.remove('active'); // for one matched element
+// for one matched element
+_.first(view.$('.box')).focus();
+
 // for multiple matched elements
-_.each(view.$('.sidebar'), function(el) {
-  el.classList.add('active')
+_.each(view.$('.item'), function(el) {
+  el.classList.remove('active')
 });
 var fields = _.invoke(view.$('.field'), 'innerHTML');
 ```
