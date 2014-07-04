@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - "0.11"
+  - "0.10"
+deploy:
+  api_key:
+    secure: BSNCzL7RL4Qd09kVIannM4ufZZHzNYFLh8SzJPeiMOKWvyNLtKhpGPLPUn+GSsds3y+S3x6jcRWVasV4jqsQJiFkr8ad+iV5D7TFUmap1K6ckdD7UnpAVVdVBaT6lPX8QTpO6/qKyNz4wZoJFAso88XCkpRXBD0MhJiJp7f+Wb8=
+  email: amk528@cs.nyu.edu
+  provider: npm
+notifications:
+  email: false
