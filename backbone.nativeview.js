@@ -109,7 +109,7 @@
             return listener.apply(this, arguments);
           }
         }
-      } : listener;
+      }.bind(this) : listener;
 
       elementAddEventListener.call(this.el, eventName, handler, false);
       this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});
