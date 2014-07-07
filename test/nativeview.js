@@ -1,5 +1,7 @@
 (function() {
 
+  var Backbone = require('backbone');
+
   // When testing alternative View implementations, change this varaible.
   var View = Backbone.NativeView;
 
