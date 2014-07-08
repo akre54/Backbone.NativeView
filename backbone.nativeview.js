@@ -33,10 +33,10 @@
       }) + 'MatchesSelector'] ||
       // Make our own `Element#matches` for IE8
       function(selector) {
-        // We'll use querySelectorAll to find all element matching the selector,
+        // Use querySelectorAll to find all elements matching the selector,
         // then check if the given element is included in that list.
         // Executing the query on the parentNode reduces the resulting nodeList,
-        // document doesn't have a parentNode, though.
+        // (document doesn't have a parentNode).
         var nodeList = (this.parentNode || document).querySelectorAll(selector) || [];
         for (var i = 0, l = nodeList.length; i < l; i++) {
           if (nodeList[i] == this) return true;
@@ -67,6 +67,8 @@
       if (this.el.parentNode) this.el.parentNode.removeChild(this.el);
     },
 
+    // Apply the `element` to the view. `element` can be a CSS selector,
+    // a string of HTML, or an Element node.
     _setElement: function(element) {
       if (typeof element == 'string') {
         if (paddedLt.test(element)) {
@@ -81,6 +83,8 @@
       }
     },
 
+    // Set a hash of attributes to the view's `el`. We use the "prop" version
+    // if available, falling back to `setAttribute` for the catch-all.
     _setAttributes: function(attrs) {
       for (var attr in attrs) {
         attr in this.el ? this.el[attr] = attrs[attr] : this.el.setAttribute(attr, attrs[attr]);
@@ -101,9 +105,10 @@
         selector = null;
       }
 
+      var root = this.el;
       var handler = selector ? function (e) {
         var node = e.target || e.srcElement;
-        for (; node && node != this.el; node = node.parentNode) {
+        for (; node && node != root; node = node.parentNode) {
           if (matchesSelector.call(node, selector)) {
             e.delegateTarget = node;
             return listener.apply(this, arguments);
