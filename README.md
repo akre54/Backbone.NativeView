@@ -23,6 +23,21 @@ As an alternative, you may extend an existing View's prototype to use native
 methods, or even replace Backbone.View itself:
 
 ```js
+var MyBaseView = Backbone.View.extend(Backbone.NativeViewMixin);
+
+// or
+
+var MyBaseView = Backbone.View.extend({
+  initialize: function(options) {
+    // ...
+    this._domEvents = [];
+  }
+});
+
+_.extend(MyBaseView.prototype, Backbone.NativeViewMixin);
+
+// or
+
 Backbone.View = Backbone.NativeView;
 
 var MyView = Backbone.View.extend({
@@ -30,10 +45,6 @@ var MyView = Backbone.View.extend({
     // ...
   }
 });
-
-// or
-
-var MyBaseView = Backbone.View.extend(Backbone.NativeViewMixin);
 ```
 
 Features:
