@@ -20,16 +20,20 @@ var MyView = Backbone.NativeView.extend({
 ```
 
 As an alternative, you may extend an existing View's prototype to use native
-methods, or even Backbone.View itself:
+methods, or even replace Backbone.View itself:
 
 ```js
-var Backbone.View = Backbone.View.extend(Backbone.NativeViewMixin);
+Backbone.View = Backbone.NativeView;
 
 var MyView = Backbone.View.extend({
   initialize: function(options) {
     // ...
   }
 });
+
+// or
+
+var MyBaseView = Backbone.View.extend(Backbone.NativeViewMixin);
 ```
 
 Features:
