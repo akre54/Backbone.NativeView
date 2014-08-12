@@ -60,8 +60,13 @@ var fields = _.invoke(view.$('.field'), 'innerHTML');
 
 Requirements:
 -------------
-NativeView makes use of `querySelector`/`querySelectorAll`. For IE7 and below
-you must include a polyfill.
+NativeView makes use of a few ES5/HTML5 features. For IE7 and below you must
+include a polyfill like [eS5-shim](https://github.com/es-shims/es5-shim).
+Specifically we use:
+
+* `querySelector`/`querySelectorAll`
+* `Array.prototype.indexOf`
+* `Function.prototype.bind`
 
 Notes:
 ------

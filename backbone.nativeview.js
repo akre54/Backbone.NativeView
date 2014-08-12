@@ -7,10 +7,10 @@
 //     https://github.com/akre54/Backbone.NativeView
 
 (function (factory) {
-  if (typeof define === 'function' && define.amd) { define(['underscore', 'backbone'], factory);
-  } else if (typeof exports === 'object') { factory(require('underscore'), require('backbone'));
-  } else { factory(_, Backbone); }
-}(function (_, Backbone) {
+  if (typeof define === 'function' && define.amd) { define(['backbone'], factory);
+  } else if (typeof exports === 'object') { factory(require('backbone'));
+  } else { factory(Backbone); }
+}(function (Backbone) {
   // Cached regex to match an opening '<' of an HTML tag, possibly left-padded
   // with whitespace.
   var paddedLt = /^\s*</;
@@ -28,9 +28,10 @@
 
   // Find the right `Element#matches` for IE>=9 and modern browsers.
   var matchesSelector = ElementProto && ElementProto.matches ||
-      ElementProto[_.find(['webkit', 'moz', 'ms', 'o'], function(prefix) {
-        return !!ElementProto[prefix + 'MatchesSelector'];
-      }) + 'MatchesSelector'] ||
+      ElementProto.webkitMatchesSelector ||
+      ElementProto.mozMatchesSelector ||
+      ElementProto.msMatchesSelector ||
+      ElementProto.oMatchesSelector ||
       // Make our own `Element#matches` for IE8
       function(selector) {
         // Use querySelectorAll to find all elements matching the selector,
@@ -141,7 +142,7 @@
           if (!match) continue;
 
           elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
-          this._domEvents.splice(_.indexOf(handlers, item), 1);
+          this._domEvents.splice(handlers.indexOf(item), 1);
         }
       }
       return this;
