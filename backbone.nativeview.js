@@ -27,7 +27,7 @@
   }
 
   // Find the right `Element#matches` for IE>=9 and modern browsers.
-  var matchesSelector = ElementProto && ElementProto.matches ||
+  var matchesSelector = ElementProto.matches ||
       ElementProto.webkitMatchesSelector ||
       ElementProto.mozMatchesSelector ||
       ElementProto.msMatchesSelector ||
@@ -112,10 +112,10 @@
         for (; node && node != root; node = node.parentNode) {
           if (matchesSelector.call(node, selector)) {
             e.delegateTarget = node;
-            return listener.apply(this, arguments);
+            listener(e);
           }
         }
-      }.bind(this) : listener;
+      } : listener;
 
       elementAddEventListener.call(this.el, eventName, handler, false);
       this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});

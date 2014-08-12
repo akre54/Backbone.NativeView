@@ -81,7 +81,6 @@ Specifically we use:
 
 * `querySelector`/`querySelectorAll`
 * `Array.prototype.indexOf`
-* `Function.prototype.bind`
 
 Notes:
 ------
