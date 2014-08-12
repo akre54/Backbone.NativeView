@@ -1,4 +1,4 @@
-// Backbone.NativeView.js 0.3.0
+// Backbone.NativeView.js 0.3.1
 // ---------------
 
 //     (c) 2014 Adam Krebs, Jimmy Yuen Ho Wong
