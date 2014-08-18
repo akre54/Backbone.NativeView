@@ -30,7 +30,14 @@
     ok((new MixinView)._domEvents);
   });
 
-  test("undelegate", 9, function() {
+  test("View#$", function() {
+    var result = view.$('h1');
+    equal(result.length, 1);
+    equal(result[0].tagName, 'h1');
+    equal(result[0].nodeType, 1);
+  });
+
+  test("delegate and undelegate", 9, function() {
     var counter1 = 0, counter2 = 0;
     view.delegate('click', function() { counter1++; });
     addEventListener.call(view.el, 'click', function() { counter2++ });
