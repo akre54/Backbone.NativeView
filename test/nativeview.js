@@ -1,6 +1,7 @@
 (function() {
 
-  var Backbone = require('backbone');
+  var _ = require('underscore'),
+      Backbone = require('backbone');
 
   // When testing alternative View implementations, change this varaible.
   var View = Backbone.NativeView;
@@ -13,6 +14,20 @@
       view = new View({el: '#testElement'});
     }
 
+  });
+
+  test("extending", 3, function() {
+    var BaseView = Backbone.View.extend();
+    var NativeView = Backbone.NativeView;
+
+    var ExtendedView = Backbone.View.extend(Backbone.NativeViewMixin);
+
+    var MixinView = _.extend(BaseView, Backbone.NativeViewMixin);
+    MixinView.prototype.initialize = function(options) { this._domEvents = []; }
+
+    ok((new NativeView)._domEvents);
+    ok((new ExtendedView)._domEvents);
+    ok((new MixinView)._domEvents);
   });
 
   test("undelegate", 9, function() {
