@@ -29,7 +29,8 @@ var MyBaseView = Backbone.View.extend(Backbone.NativeViewMixin);
 
 var MyBaseView = Backbone.View.extend({
   initialize: function(options) {
-    // ...
+    // If you go the prototype extension route be sure to set _domEvents in
+    // initialize yourself.
     this._domEvents = [];
   }
 });
@@ -75,12 +76,8 @@ var fields = _.invoke(view.$('.field'), 'innerHTML');
 
 Requirements:
 -------------
-NativeView makes use of a few ES5/HTML5 features. For IE7 and below you must
-include a polyfill like [eS5-shim](https://github.com/es-shims/es5-shim).
-Specifically we use:
-
-* `querySelector`/`querySelectorAll`
-* `Array.prototype.indexOf`
+NativeView makes use of `querySelector` and `querySelectorAll`. For IE7 and
+below you must include a polyfill.
 
 Notes:
 ------

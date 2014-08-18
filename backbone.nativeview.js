@@ -26,6 +26,11 @@
     return this.detachEvent('on' + eventName, listener);
   }
 
+  var indexOf = function(array, item) {
+    for (var i = 0, len = array.length; i < len; i++) if (array[i] === item) return i;
+    return -1;
+  }
+
   // Find the right `Element#matches` for IE>=9 and modern browsers.
   var matchesSelector = ElementProto.matches ||
       ElementProto.webkitMatchesSelector ||
@@ -39,10 +44,7 @@
         // Executing the query on the parentNode reduces the resulting nodeList,
         // (document doesn't have a parentNode).
         var nodeList = (this.parentNode || document).querySelectorAll(selector) || [];
-        for (var i = 0, l = nodeList.length; i < l; i++) {
-          if (nodeList[i] == this) return true;
-        }
-        return false;
+        return !!~indexOf(nodeList, this);
       };
 
   // Cache Backbone.View for later access in constructor
@@ -142,7 +144,7 @@
           if (!match) continue;
 
           elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
-          this._domEvents.splice(handlers.indexOf(item), 1);
+          this._domEvents.splice(indexOf(handlers, item), 1);
         }
       }
       return this;
@@ -155,7 +157,7 @@
           var item = this._domEvents[i];
           elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
         };
-        this._domEvents = [];
+        this._domEvents.length = 0;
       }
       return this;
     }
