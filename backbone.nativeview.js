@@ -44,7 +44,7 @@
         // Executing the query on the parentNode reduces the resulting nodeList,
         // (document doesn't have a parentNode).
         var nodeList = (this.parentNode || document).querySelectorAll(selector) || [];
-        return !!~indexOf(nodeList, this);
+        return ~indexOf(nodeList, this);
       };
 
   // Cache Backbone.View for later access in constructor

@@ -71,7 +71,7 @@ _.first(view.$('.box')).focus();
 _.each(view.$('.item'), function(el) {
   el.classList.remove('active')
 });
-var fields = _.invoke(view.$('.field'), 'innerHTML');
+var fields = _.pluck(view.$('.field'), 'innerHTML');
 ```
 
 Requirements:
