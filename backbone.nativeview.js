@@ -7,10 +7,21 @@
 //     https://github.com/akre54/Backbone.NativeView
 
 (function (factory) {
-  if (typeof define === 'function' && define.amd) { define(['backbone'], factory);
-  } else if (typeof exports === 'object') { factory(require('backbone'));
+  if (typeof define === 'function' && define.amd) {
+    try {
+      define(['backbone'], factory);
+    } catch (e) {
+      define([], { init: factory }
+    }
+  } else if (typeof exports === 'object') { 
+    try {
+      factory(require('backbone'));
+    } catch (e) {
+      exports.init = factory;
+    }
   } else { factory(Backbone); }
 }(function (Backbone) {
+  if (!Backbone) throw 'Backbone.NativeView factory must be passed an instance of Backbone';
   // Cached regex to match an opening '<' of an HTML tag, possibly left-padded
   // with whitespace.
   var paddedLt = /^\s*</;
