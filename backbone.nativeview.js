@@ -8,7 +8,7 @@
 
 (function (factory) {
   if (typeof define === 'function' && define.amd) { define(['backbone'], factory);
-  } else if (typeof exports === 'object') { factory(require('backbone'));
+  } else if (typeof module === 'object') { module.exports = factory(require('backbone'));
   } else { factory(Backbone); }
 }(function (Backbone) {
   // Cached regex to match an opening '<' of an HTML tag, possibly left-padded
