@@ -4,10 +4,8 @@ Backbone.NativeView
 A drop-in replacement for Backbone.View that uses only native DOM methods for
 element selection and event delegation. It has no dependency on jQuery.
 
-NOTE: Backbone.NativeView relies on edge (master branch) version of Backbone.
-Backbone 1.1.2 is **not compatible** with Backbone.NativeView. We will hopefully
-release a new compatible version soon, but in the meantime please use
-the master branch or point your package manager to use a recent git SHA.
+NOTE: Backbone.NativeView relies on version 1.2.0 of Backbone.
+Backbone 1.1.2 is **not compatible** with Backbone.NativeView.
 
 To Use:
 -------
