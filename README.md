@@ -26,9 +26,11 @@ methods, or even replace Backbone.View itself:
 
 ```js
 var MyBaseView = Backbone.View.extend(Backbone.NativeViewMixin);
+```
 
-// or
+or
 
+```js
 var MyBaseView = Backbone.View.extend({
   initialize: function(options) {
     // If you go the prototype extension route be sure to set _domEvents in
@@ -38,9 +40,11 @@ var MyBaseView = Backbone.View.extend({
 });
 
 _.extend(MyBaseView.prototype, Backbone.NativeViewMixin);
+```
 
-// or
+or
 
+```js
 Backbone.View = Backbone.NativeView;
 
 var MyView = Backbone.View.extend({
@@ -84,7 +88,7 @@ below you must include a polyfill.
 Notes:
 ------
 * The `$el` property no longer exists on Views. Use `el` instead.
-* The `$` method returns a NodeList instead of a jQuery context. You can
+* `View#$` returns a NodeList instead of a jQuery context. You can
   iterate over either using `_.each`.
 
 
