@@ -144,7 +144,7 @@
           if (!match) continue;
 
           elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
-          this._domEvents.splice(indexOf(handlers, item), 1);
+          this._domEvents.splice(i, 1);
         }
       }
       return this;
