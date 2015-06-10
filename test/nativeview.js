@@ -55,13 +55,11 @@
   });
 
   test("undelegating only affects matched handlers", 1, function() {
-    var counter = 0, handler = function() { counter++ };
-    view.delegate('click', 'h1', handler);
-    view.delegate('click', 'div', handler);
+    view.delegate('click', 'h1', function() { ok(true); });
+    view.delegate('click', 'div', function() { ok(false); });
     view.undelegate('click', 'div');
 
     _.each(view.$('h1, div'), click);
-    equal(counter, 1);
   });
 
 
