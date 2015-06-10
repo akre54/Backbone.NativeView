@@ -1,8 +1,5 @@
 (function() {
 
-  var _ = require('underscore'),
-      Backbone = require('backbone');
-
   // When testing alternative View implementations, change this varaible.
   var View = Backbone.NativeView;
 
@@ -33,11 +30,11 @@
   test("View#$", function() {
     var result = view.$('h1');
     equal(result.length, 1);
-    equal(result[0].tagName, 'h1');
+    equal(result[0].tagName.toLowerCase(), 'h1');
     equal(result[0].nodeType, 1);
   });
 
-  test("delegate and undelegate", 9, function() {
+  test("delegate and undelegate", 6, function() {
     var counter1 = 0, counter2 = 0;
     view.delegate('click', function() { counter1++; });
     addEventListener.call(view.el, 'click', function() { counter2++ });
@@ -45,7 +42,7 @@
     click(view.el);
 
     equal(counter1, 1);
-    equal(counter3, 1);
+    equal(counter2, 1);
     equal(view._domEvents.length, 1);
 
     view.undelegate('click');
@@ -57,7 +54,15 @@
     equal(view._domEvents.length, 0);
   });
 
+  test("undelegating only affects matched handlers", 1, function() {
+    var counter = 0, handler = function() { counter++ };
+    view.delegate('click', 'h1', handler);
+    view.delegate('click', 'div', handler);
+    view.undelegate('click', 'div');
 
+    _.each(view.$('h1, div'), click);
+    equal(counter, 1);
+  });
 
 
   // Cross-browser helpers
