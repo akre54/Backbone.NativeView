@@ -54,12 +54,16 @@
     equal(view._domEvents.length, 0);
   });
 
-  test("undelegating only affects matched handlers", 1, function() {
-    view.delegate('click', 'h1', function() { ok(true); });
-    view.delegate('click', 'div', function() { ok(false); });
-    view.undelegate('click', 'div');
+  test("undelegating only affects matched handlers", 3, function() {
+    view.delegate('click', 'h1', function() { ok(false); });
+    view.delegate('click', 'div', function() { ok(true); });
+    view.undelegate('click', 'h1');
 
     _.each(view.$('h1, div'), click);
+
+    // // We don't currently do any selector matching. Fix this
+    // view.undelegate('click', '.one');
+    // _.each(view.$('h1, div'), click);
   });
 
 
