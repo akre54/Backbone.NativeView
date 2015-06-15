@@ -71,7 +71,8 @@
     },
 
     // Apply the `element` to the view. `element` can be a CSS selector,
-    // a string of HTML, or an Element node.
+    // a string of HTML, or an Element node. If passed a NodeList or CSS
+    // selector, uses just the first match.
     _setElement: function(element) {
       if (typeof element == 'string') {
         if (paddedLt.test(element)) {
@@ -170,3 +171,4 @@
 
   return Backbone.NativeView;
 }));
+

@@ -103,3 +103,4 @@
     element.fireEvent('onclick', event);
   }
 })();
+
