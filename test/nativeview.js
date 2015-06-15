@@ -33,6 +33,12 @@
     equal(result[0].tagName.toLowerCase(), 'h1');
     equal(result[0].nodeType, 1);
   });
+  
+  test("View#setElement", function() {
+    var result = view.$('h1');
+    view.setElement(result);
+    equal(view.el, result[0]);
+  });
 
   test("delegate and undelegate", 6, function() {
     var counter1 = 0, counter2 = 0;
