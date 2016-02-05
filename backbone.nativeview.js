@@ -19,14 +19,14 @@
   var ElementProto = (typeof Element !== 'undefined' && Element.prototype) || {};
 
   // Cross-browser event listener shims
-  var elementAddEventListener = ElementProto.addEventListener ? function(eventName, listener, useCapture) {
-    return this.addEventListener(eventName, listener, useCapture);
+  var elementAddEventListener = ElementProto.addEventListener ? function(eventName, listener) {
+    return this.addEventListener(eventName, listener, false);
   } : function(eventName, listener) {
     return this.attachEvent('on' + eventName, listener);
   }
 
-  var elementRemoveEventListener = ElementProto.removeEventListener ? function(eventName, listener, useCapture) {
-    return this.removeEventListener(eventName, listener, useCapture);
+  var elementRemoveEventListener = ElementProto.removeEventListener ? function(eventName, listener) {
+    return this.removeEventListener(eventName, listener, false);
   } : function(eventName, listener) {
     return this.detachEvent('on' + eventName, listener);
   }
