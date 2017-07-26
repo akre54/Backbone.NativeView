@@ -111,6 +111,12 @@
     // result of calling bound `listener` with the parameters given to the
     // handler.
     delegate: function(eventName, selector, listener) {
+      var root = this.el;
+
+      if (!root) {
+        return;
+      }
+
       if (typeof selector === 'function') {
         listener = selector;
         selector = null;
@@ -127,7 +133,6 @@
         return listener;
       }
 
-      var root = this.el;
       var handler = selector ? function (e) {
         var node = e.target || e.srcElement;
         for (; node && node != root; node = node.parentNode) {
