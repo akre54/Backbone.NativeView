@@ -1,6 +1,6 @@
 {
   "name": "backbone.nativeview",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "author": "Adam Krebs <amk528@cs.nyu.edu>",
   "description": "A Backbone View powered by native DOM methods",
   "licence": "MIT",
