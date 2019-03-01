@@ -87,7 +87,7 @@
         } else {
           this.el = document.querySelector(element);
         }
-      } else if (element && element.length) {
+      } else if (element && !_.isElement(element) && element.length) {
         this.el = element[0];
       } else {
         this.el = element;
