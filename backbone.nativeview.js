@@ -7,10 +7,10 @@
 //     https://github.com/akre54/Backbone.NativeView
 
 (function (factory) {
-  if (typeof define === 'function' && define.amd) { define(['backbone'], factory);
-  } else if (typeof module === 'object') { module.exports = factory(require('backbone'));
-  } else { factory(Backbone); }
-}(function (Backbone) {
+  if (typeof define === 'function' && define.amd) { define(['underscore', 'backbone'], factory);
+  } else if (typeof module === 'object') { module.exports = factory(require('underscore'), require('backbone'));
+  } else { factory(_, Backbone); }
+}(function (_, Backbone) {
   // Cached regex to match an opening '<' of an HTML tag, possibly left-padded
   // with whitespace.
   var paddedLt = /^\s*</;
